@@ -1,0 +1,22 @@
+{
+  "name": "@adobe/aemcs-api-client-lib",
+  "description": "AEM-CS API Client Library",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adobe/aemcs-api-client-lib"
+  },
+  "bugs": {
+    "url": "https://github.com/adobe/aemcs-api-client-lib/issues"
+  },
+  "engines": {
+    "node": ">=0.10"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "qs": "^6.8.0",
+    "commander": "^2.20.0",
+    "jsonwebtoken": "^8.5.1"
+  }
+}
