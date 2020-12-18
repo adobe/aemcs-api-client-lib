@@ -9,10 +9,10 @@ Retrieving the JSON
     curl -H "Authorization: Bearer <your_ims_access_token>" https://dev-console-ns-team-aem-cm-n3003.ethos14-prod-va7.dev.adobeaemcloud.com/api/releases/ns-team-aem-cm-n3003/integration/service_token_cm-p9503-e11454.json
 
     Where 
-       dev-console-ns-team-aem-cm-n3003.ethos14-prod-va7.dev.adobeaemcloud.com is the FQDN of your developer console instance, linked from Cloud Manager UI.
+       dev-console-ns-team-aem-cm-n3003.ethos14-prod-va7.dev.adobeaemcloud.com is the FQDN of your AEM-CS developer console instance, linked from Cloud Manager UI.
        ns-team-aem-cm-n3003 is the namespace, see the FQDN
        cm-p9503-e11454 is your release name
-       your_ims_access_token is your IMS Access token which can be retrieved from the Dev Console UI.
+       your_ims_access_token is your IMS Access token which can be retrieved from the AEM-CS Dev Console UI.
 
     A user who has access to the Adobe Admin Console as an Administration create the integration by accessing the UI or this URL for the first time, but after that any developer who has administrative access to the AEM-CS Environment may retrieve the integration JSON.
 
