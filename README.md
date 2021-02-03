@@ -18,6 +18,7 @@ Retrieving the JSON
 
 The JSON takes the following form (secrets have been redacted)
 
+```javascript
         {
         "ok": true,
         "integration": {
@@ -35,10 +36,13 @@ The JSON takes the following form (secrets have been redacted)
         },
         "statusCode": 200
         }
+```
 
 # NodeJS
 
 To use 
+
+```javascript
 
     /*jshint node:true */
     "use strict";
@@ -54,7 +58,7 @@ To use
     }).catch(e => {
         console.log("Failed to exchange for access token ",e);
     });
-
+```
 
 Or use the CLI
 
