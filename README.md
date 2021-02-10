@@ -75,6 +75,9 @@ output
     "expires_in": 86399999
     }
 
+### Demo
+
+* [Integration with a workflow engine](https://github.com/tmaret/adobe-developers-live-api-auth-demo) shown at Adobe Developers Live conference
 
 ### Contributing
 
