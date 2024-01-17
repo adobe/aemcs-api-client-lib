@@ -12,4 +12,12 @@ describe('Testing lib', () => {
             expect(data).toBeDefined()
         })
     });
+
+    test('no proxy', () => {
+        const jsonfile = "downloaded_integration.json";
+        var config = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
+        return exchange(config).then((data) => {
+            expect(data).toBeDefined()
+        })
+    });
 })
