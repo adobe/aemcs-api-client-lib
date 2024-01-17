@@ -79,6 +79,32 @@ output
 
 * [Integration with a workflow engine](https://github.com/tmaret/adobe-developers-live-api-auth-demo) shown at Adobe Developers Live conference
 
+### How to test
+
+1. Create a file in the project called `downloaded_integration.json`
+2. Create a developer project in developer.adobe.com (if you choose to use Cloud Manager as an API then provide the ent_cloudmgr_sdk as the scope)
+3. Copy the necessary information from your project into the `downloaded_integration.json` file
+4. Execute `npm run test`
+
+```
+{ 
+    "integration": {
+            "imsEndpoint": "ims-na1.adobelogin.com",
+            "metascopes": "ent_aem_cloud_api",
+            "technicalAccount": {
+            "clientId": "cm-p7603-e12614-integration",
+            "clientSecret": "4b2__REDACTED__1d47"
+            },
+            "email": "c9adf360-3840-41b2-ade3-efc09df14811@techacct.adobe.com",
+            "id": "D8E157165FC0EAE10A495E8C@techacct.adobe.com",
+            "org": "907136ED5D35CBF50A495CD4@AdobeOrg",
+            "privateKey": "-----BEGIN RSA PRIVATE KEY-----\r\nREDACTED\r\n-----END RSA PRIVATE KEY-----\r\n",
+            "publicKey": "-----BEGIN CERTIFICATE-----\r\nMIIDFDCCAfygAwIBAgIJeFhHzqB0j4woMA0GCSqGSIb3DQEBCwUAMCYxJDAiBgNV\r\nBAMTG2NtLXA3NjAzLWUxMjYxNC1pbnRlZ3JhdGlvbjAeFw0yMDExMjcxMjAyNDFa\r\nFw0yMTExMjcxMjAyNDFaMCYxJDAiBgNVBAMTG2NtLXA3NjAzLWUxMjYxNC1pbnRl\r\nZ3JhdGlvbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOeT6J4L+/NO\r\nyyj8AWvuKxHla+g1RX16CDXmnPSLqgJLzA+pu/rVe9It89tAodn+kqObfD8QeL2P\r\nUR+CzfndpvzKmUJ7wqMSHt6gzAe9ogGztYqTVUufBqmY83DFUhmWw4fIyj7JGNpr\r\n44Uf/7jFwz9IEt2a6p275wu2tJ9ZLporTaSk3LjlHDHiINWBZ9s9clu8sl9xei6p\r\nVqlh+FBFyE1lh+4n9KNH9UZ9ayL1aLAMFawhv33BKooWxsYE/veEEogogylpeGRC\r\nwJXgnEyYuA3QmSw1EYSM7mDXkTHlQr1mKzvuE/5cs0kOwh+mdFMsgfKaqgK5jodk\r\nPC8pWl/+4Z0CAwEAAaNFMEMwDAYDVR0TBAUwAwEB/zALBgNVHQ8EBAMCAvQwJgYD\r\nVR0RBB8wHYYbaHR0cDovL2V4YW1wbGUub3JnL3dlYmlkI21lMA0GCSqGSIb3DQEB\r\nCwUAA4IBAQA8A4aDmt+WVAeQaK0/oKS+VgUItqGPr2oy9yb300Fa9DtgVf+sLi/2\r\ndKcnhtgGT4ZqBION6fNYgkK0WmHKy+1iHWxiRuH3Zh8lXHPqUJDiIkjAMFIZkv7f\r\nQmI2PDfGEBXYAC8pUaPj6ZMvYbNIPXyfIkDoJmQTfmtOb5WkUh1/1N9LABNFUL+C\r\nbDaKvsnKKAm9nqK2ifuY6zfUfADaPXd7NkordQ3zPOlra9pWMn4cpEuVYvai3pKH\r\nlgEymr/f9lEMSGM9G+xfu1/ouTjaNZIHrIBTvupkqZ0yyY7ceUhNvk9dVb4KJBL/\r\nihlV7nIosONuitjxM93ATjKE+3ZY3hyC\r\n-----END CERTIFICATE-----\r\n"
+        }
+}
+```
+
+
 ### Contributing
 
 Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.

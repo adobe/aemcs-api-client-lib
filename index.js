@@ -13,7 +13,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-
+const { HttpsProxyAgent } = require("https-proxy-agent")
 const axios = require('axios');
 const util = require('util'); 
 const qs = require('qs');
@@ -21,15 +21,24 @@ var jwt = require('jsonwebtoken');
 
 // base client lib with interceptors for requests to add logging.
 class IMSJWTTokenExchange {
-    constructor(host) {
+    constructor(host, proxy) {
         if ( host === undefined ) {
             throw new Error("Client lib must have a target host defined, imsHost or jilHost");
         }
         this.host = host
-        this.request = axios.create({
-            baseURL: `https://${this.host}`,
-            timeout: 10000
-        });
+        if (proxy) {
+            var httpsAgent = new HttpsProxyAgent({host: proxy.host, port: proxy.port});
+            this.request = axios.create({
+                baseURL: `https://${this.host}`,
+                timeout: 10000,
+                httpsAgent
+            });
+        } else {
+            this.request = axios.create({
+                baseURL: `https://${this.host}`,
+                timeout: 10000
+            });
+        }
 
 
         this.request.interceptors.request.use(function (config) {
@@ -159,7 +168,12 @@ var assertPresent = (config, path, missing) => {
 
 
 module.exports = async (integrationConfig) => {
-        var jwtExchange = new IMSJWTTokenExchange(integrationConfig.integration.imsEndpoint);
+        var jwtExchange = undefined;
+        if (integrationConfig.proxy) {
+            jwtExchange = new IMSJWTTokenExchange(integrationConfig.integration.imsEndpoint, integrationConfig.proxy);
+        } else {
+            jwtExchange = new IMSJWTTokenExchange(integrationConfig.integration.imsEndpoint);
+        }
         
         var missing = [];
         assertPresent(integrationConfig, "integration.org", missing);
@@ -172,7 +186,8 @@ module.exports = async (integrationConfig) => {
         if ( missing.length > 0 ) {
             throw new Error("The following configuration elements are missing ",missing.join(","));
         }
-        
+        console.log(integrationConfig.integration.privateKey)
+        console.log(integrationConfig.integration.publicKey)
 		return await jwtExchange.exchangeJwt({
 				issuer: `${integrationConfig.integration.org}`,
 				subject: `${integrationConfig.integration.id}`, 
