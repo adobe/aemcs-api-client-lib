@@ -186,8 +186,7 @@ module.exports = async (integrationConfig) => {
         if ( missing.length > 0 ) {
             throw new Error("The following configuration elements are missing ",missing.join(","));
         }
-        console.log(integrationConfig.integration.privateKey)
-        console.log(integrationConfig.integration.publicKey)
+
 		return await jwtExchange.exchangeJwt({
 				issuer: `${integrationConfig.integration.org}`,
 				subject: `${integrationConfig.integration.id}`, 
