@@ -1,6 +1,6 @@
 # AEM-CS API Client Library
 
-This repository contains code that can be used to exchange AEM-CS API Integration JSON for Access Tokens with IMS.
+This repository contains code that can be used to exchange AEM-CS API Integration JSON for Access Tokens with IMS. It is meant to be used as a starting point (i.e. an example) for an application that is to use IMS programmatically. 
 
 AEM-CS API Integration JSON may be retrieved from the AEM-CS Developer Console either by the UI or using an API with Bearer token.
 
