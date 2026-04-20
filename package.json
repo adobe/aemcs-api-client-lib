@@ -20,7 +20,7 @@
     "axios": "^1.8.2",
     "commander": "^14.0.0",
     "jsonwebtoken": "^9.0.0",
-    "https-proxy-agent": "^8.0.0",
+    "https-proxy-agent": "^9.0.0",
     "qs": "^6.8.0"
   },
   "devDependencies": {
