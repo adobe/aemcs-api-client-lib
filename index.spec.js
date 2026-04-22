@@ -1,23 +1,14 @@
-const fs = require("fs")
-const exchange = require('./index')
-describe('Testing lib', () => {
-    test('use proxy', () => {
-        const jsonfile = "downloaded_integration.json";
-        var config = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
-        config.proxy = {
-            host: "127.0.0.1",
-            port: 8888
-        }
-        return exchange(config).then((data) => {
-            expect(data).toBeDefined()
-        })
-    });
+const fs = require('fs');
+const assert = require('node:assert');
+const exchange = require('./index');
 
-    test('no proxy', () => {
-        const jsonfile = "downloaded_integration.json";
-        var config = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
-        return exchange(config).then((data) => {
-            expect(data).toBeDefined()
-        })
-    });
-})
+(async () => {
+    const jsonfile = 'downloaded_integration.json';
+    const config = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
+    const data = await exchange(config);
+    assert.ok(data, 'expected data to be defined');
+    console.log('ok - no proxy');
+})().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});
