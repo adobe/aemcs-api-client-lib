@@ -3,7 +3,7 @@
   "description": "AEM-CS API Client Library",
   "version": "0.0.1",
   "scripts": {
-    "test": "jest"
+    "test": "node index.spec.js"
   },
   "repository": {
     "type": "git",
@@ -13,17 +13,7 @@
     "url": "https://github.com/adobe/aemcs-api-client-lib/issues"
   },
   "engines": {
-    "node": ">=0.10"
+    "node": ">=18"
   },
-  "license": "Apache-2.0",
-  "dependencies": {
-    "axios": "^1.8.2",
-    "commander": "^14.0.0",
-    "jsonwebtoken": "^9.0.0",
-    "https-proxy-agent": "^9.0.0",
-    "qs": "^6.8.0"
-  },
-  "devDependencies": {
-    "jest": "^30.0.0"
-  }
+  "license": "Apache-2.0"
 }

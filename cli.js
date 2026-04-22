@@ -1,4 +1,3 @@
-/*jshint node:true */
 "use strict";
 
 /*
@@ -13,29 +12,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-
 const fs = require('fs');
-const process = require('process');
-const program = require('commander');
-const exchange = require("./index.js");
+const exchange = require('./index.js');
 
-program
-	.version('0.0.1')
-	.description("AEM-CS API Client Exchange CLI");
+function usage() {
+    console.error('Usage: node cli.js exchange <jsonfile>');
+    process.exit(2);
+}
 
+const [, , command, jsonfile] = process.argv;
+if (command !== 'exchange' || !jsonfile) {
+    usage();
+}
 
-program
-    .command("exchange <jsonfile>")
-	.description("Performs a JWT Exchange using the integration from the AEM-CS devel console instance")
-	.action(function(jsonfile) {
-			var config = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
-			exchange(config).then(accessToken => {
-				console.log(JSON.stringify(accessToken,null,2));
-				process.exit(0);
-			}).catch(e => {
-				console.log("Failed to exchange for access token ",e);
-				process.exit(1);
-			});
-	});
-
-program.parse(process.argv);
+const config = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
+exchange(config).then((accessToken) => {
+    console.log(JSON.stringify(accessToken, null, 2));
+    process.exit(0);
+}).catch((e) => {
+    console.log('Failed to exchange for access token ', e);
+    process.exit(1);
+});
