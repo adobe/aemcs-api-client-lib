@@ -1,114 +1,147 @@
-# AEM-CS API Client Library
+# AEM-CS API Authentication Examples
 
-This repository contains code that can be used to exchange AEM-CS API Integration JSON for Access Tokens with IMS. It is meant to be used as a starting point (i.e. an example) for an application that is to use IMS programmatically. 
+This repository contains minimal Node.js examples for authenticating server-side applications with Adobe Identity Management Services (IMS) and calling AEM as a Cloud Service APIs.
 
-AEM-CS API Integration JSON may be retrieved from the AEM-CS Developer Console either by the UI or using an API with Bearer token.
+**This is example code, not a supported client library, and is not intended for publication to npm.** Copy and adapt the examples as a starting point for your own application.
 
-Retrieving the JSON
+**OAuth Server-to-Server is the recommended authentication method.** It uses the OAuth `client_credentials` grant, without a JWT, private key, or certificate. The original JWT README and examples are preserved in [README-jwt-legacy.md](README-jwt-legacy.md). JWT authentication is deprecated in favor of OAuth Server-to-Server.
 
-    curl -H "Authorization: Bearer <your_ims_access_token>" https://dev-console-ns-team-aem-cm-n3003.ethos14-prod-va7.dev.adobeaemcloud.com/api/releases/ns-team-aem-cm-n3003/integration/service_token_cm-p9503-e11454.json
+## Requirements
 
-    Where 
-       dev-console-ns-team-aem-cm-n3003.ethos14-prod-va7.dev.adobeaemcloud.com is the FQDN of your AEM-CS developer console instance, linked from Cloud Manager UI.
-       ns-team-aem-cm-n3003 is the namespace, see the FQDN
-       cm-p9503-e11454 is your release name
-       your_ims_access_token is your IMS Access token which can be retrieved from the AEM-CS Dev Console UI.
+- Node.js 18 or newer. The example uses built-in `fetch` and requires no dependencies.
+- OAuth Server-to-Server credentials from an AEM Developer Console that supports this credential type. The AEM Developer Console is distinct from Adobe Developer Console.
+- The technical account must have the product profiles and AEM permissions required by the API you want to call. Obtaining a token does not itself grant access to AEM content.
 
-    A user who has access to the Adobe Admin Console as an Administration create the integration by accessing the UI or this URL for the first time, but after that any developer who has administrative access to the AEM-CS Environment may retrieve the integration JSON.
+## Save the credentials
 
-The JSON takes the following form (secrets have been redacted)
+In the AEM Developer Console, create an **OAuth Server-to-Server (S2S)** technical account. The console shows the client secret only once, in the **Save your client secret** dialog that follows creation, and does not store it. Select **Download credentials** in that dialog to save the credentials as `aem-s2s-credentials.json`. **View** on a client secret later shows the credentials without the secret value, so it cannot be used to obtain a token. If the secret is lost, create a new secret for the account.
 
-```javascript
-        {
-        "ok": true,
-        "integration": {
-            "imsEndpoint": "ims-na1.adobelogin.com",
-            "metascopes": "ent_aem_cloud_api",
-            "technicalAccount": {
-            "clientId": "cm-p7603-e12614-integration",
-            "clientSecret": "4b2__REDACTED__1d47"
-            },
-            "email": "c9adf360-3840-41b2-ade3-efc09df14811@techacct.adobe.com",
-            "id": "D8E157165FC0EAE10A495E8C@techacct.adobe.com",
-            "org": "907136ED5D35CBF50A495CD4@AdobeOrg",
-            "privateKey": "-----BEGIN RSA PRIVATE KEY-----\r\nREDACTED\r\n-----END RSA PRIVATE KEY-----\r\n",
-            "publicKey": "-----BEGIN CERTIFICATE-----\r\nMIIDFDCCAfygAwIBAgIJeFhHzqB0j4woMA0GCSqGSIb3DQEBCwUAMCYxJDAiBgNV\r\nBAMTG2NtLXA3NjAzLWUxMjYxNC1pbnRlZ3JhdGlvbjAeFw0yMDExMjcxMjAyNDFa\r\nFw0yMTExMjcxMjAyNDFaMCYxJDAiBgNVBAMTG2NtLXA3NjAzLWUxMjYxNC1pbnRl\r\nZ3JhdGlvbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOeT6J4L+/NO\r\nyyj8AWvuKxHla+g1RX16CDXmnPSLqgJLzA+pu/rVe9It89tAodn+kqObfD8QeL2P\r\nUR+CzfndpvzKmUJ7wqMSHt6gzAe9ogGztYqTVUufBqmY83DFUhmWw4fIyj7JGNpr\r\n44Uf/7jFwz9IEt2a6p275wu2tJ9ZLporTaSk3LjlHDHiINWBZ9s9clu8sl9xei6p\r\nVqlh+FBFyE1lh+4n9KNH9UZ9ayL1aLAMFawhv33BKooWxsYE/veEEogogylpeGRC\r\nwJXgnEyYuA3QmSw1EYSM7mDXkTHlQr1mKzvuE/5cs0kOwh+mdFMsgfKaqgK5jodk\r\nPC8pWl/+4Z0CAwEAAaNFMEMwDAYDVR0TBAUwAwEB/zALBgNVHQ8EBAMCAvQwJgYD\r\nVR0RBB8wHYYbaHR0cDovL2V4YW1wbGUub3JnL3dlYmlkI21lMA0GCSqGSIb3DQEB\r\nCwUAA4IBAQA8A4aDmt+WVAeQaK0/oKS+VgUItqGPr2oy9yb300Fa9DtgVf+sLi/2\r\ndKcnhtgGT4ZqBION6fNYgkK0WmHKy+1iHWxiRuH3Zh8lXHPqUJDiIkjAMFIZkv7f\r\nQmI2PDfGEBXYAC8pUaPj6ZMvYbNIPXyfIkDoJmQTfmtOb5WkUh1/1N9LABNFUL+C\r\nbDaKvsnKKAm9nqK2ifuY6zfUfADaPXd7NkordQ3zPOlra9pWMn4cpEuVYvai3pKH\r\nlgEymr/f9lEMSGM9G+xfu1/ouTjaNZIHrIBTvupkqZ0yyY7ceUhNvk9dVb4KJBL/\r\nihlV7nIosONuitjxM93ATjKE+3ZY3hyC\r\n-----END CERTIFICATE-----\r\n"
-        },
-        "statusCode": 200
-        }
+Use the actual `technicalAccount.clientSecret` value, not the secret ID shown in the account's secret list. Use the `imsEndpoint` and `scopes` from your credentials; JWT `metascopes` are not OAuth scopes.
+
+The helper and CLI expect the credentials inside a top-level `integration` object. The downloaded file contains the credentials without this wrapper, so wrap its content:
+
+```sh
+jq '{integration: .}' aem-s2s-credentials.json > downloaded_integration.json
 ```
 
-# NodeJS
+Alternatively, edit the file so that its complete content becomes the value of a top-level `integration` field. The result looks like this:
 
-To use 
-
-```javascript
-
-    /*jshint node:true */
-    "use strict";
-
-    const fs = require('fs');
-    const exchange = require("./index.js");
-
-    const jsonfile = "downloaded_integration.json";
-
-    var config = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
-    exchange(config).then(accessToken => {
-        console.log(JSON.stringify(accessToken,null,2));
-    }).catch(e => {
-        console.log("Failed to exchange for access token ",e);
-    });
-```
-
-Or use the CLI
-
-
-    node cli.js exchange downloaded_integration.json
-
-output
-
-    >> post /ims/exchange/jwt
-    << post /ims/exchange/jwt 200
-    {
-    "token_type": "bearer",
-    "access_token": "eyJ4-REDACTED-F4MAA",
-    "expires_in": 86399999
-    }
-
-### Demo
-
-* [Integration with a workflow engine](https://github.com/tmaret/adobe-developers-live-api-auth-demo) shown at Adobe Developers Live conference
-
-### How to test
-
-1. Create a file in the project called `downloaded_integration.json`
-2. Create a developer project in developer.adobe.com (if you choose to use Cloud Manager as an API then provide the ent_cloudmgr_sdk as the scope)
-3. Copy the necessary information from your project into the `downloaded_integration.json` file
-4. Execute `npm run test`
-
-```
-{ 
-    "integration": {
-            "imsEndpoint": "ims-na1.adobelogin.com",
-            "metascopes": "ent_aem_cloud_api",
-            "technicalAccount": {
-            "clientId": "cm-p7603-e12614-integration",
-            "clientSecret": "4b2__REDACTED__1d47"
-            },
-            "email": "c9adf360-3840-41b2-ade3-efc09df14811@techacct.adobe.com",
-            "id": "D8E157165FC0EAE10A495E8C@techacct.adobe.com",
-            "org": "907136ED5D35CBF50A495CD4@AdobeOrg",
-            "privateKey": "-----BEGIN RSA PRIVATE KEY-----\r\nREDACTED\r\n-----END RSA PRIVATE KEY-----\r\n",
-            "publicKey": "-----BEGIN CERTIFICATE-----\r\nMIIDFDCCAfygAwIBAgIJeFhHzqB0j4woMA0GCSqGSIb3DQEBCwUAMCYxJDAiBgNV\r\nBAMTG2NtLXA3NjAzLWUxMjYxNC1pbnRlZ3JhdGlvbjAeFw0yMDExMjcxMjAyNDFa\r\nFw0yMTExMjcxMjAyNDFaMCYxJDAiBgNVBAMTG2NtLXA3NjAzLWUxMjYxNC1pbnRl\r\nZ3JhdGlvbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOeT6J4L+/NO\r\nyyj8AWvuKxHla+g1RX16CDXmnPSLqgJLzA+pu/rVe9It89tAodn+kqObfD8QeL2P\r\nUR+CzfndpvzKmUJ7wqMSHt6gzAe9ogGztYqTVUufBqmY83DFUhmWw4fIyj7JGNpr\r\n44Uf/7jFwz9IEt2a6p275wu2tJ9ZLporTaSk3LjlHDHiINWBZ9s9clu8sl9xei6p\r\nVqlh+FBFyE1lh+4n9KNH9UZ9ayL1aLAMFawhv33BKooWxsYE/veEEogogylpeGRC\r\nwJXgnEyYuA3QmSw1EYSM7mDXkTHlQr1mKzvuE/5cs0kOwh+mdFMsgfKaqgK5jodk\r\nPC8pWl/+4Z0CAwEAAaNFMEMwDAYDVR0TBAUwAwEB/zALBgNVHQ8EBAMCAvQwJgYD\r\nVR0RBB8wHYYbaHR0cDovL2V4YW1wbGUub3JnL3dlYmlkI21lMA0GCSqGSIb3DQEB\r\nCwUAA4IBAQA8A4aDmt+WVAeQaK0/oKS+VgUItqGPr2oy9yb300Fa9DtgVf+sLi/2\r\ndKcnhtgGT4ZqBION6fNYgkK0WmHKy+1iHWxiRuH3Zh8lXHPqUJDiIkjAMFIZkv7f\r\nQmI2PDfGEBXYAC8pUaPj6ZMvYbNIPXyfIkDoJmQTfmtOb5WkUh1/1N9LABNFUL+C\r\nbDaKvsnKKAm9nqK2ifuY6zfUfADaPXd7NkordQ3zPOlra9pWMn4cpEuVYvai3pKH\r\nlgEymr/f9lEMSGM9G+xfu1/ouTjaNZIHrIBTvupkqZ0yyY7ceUhNvk9dVb4KJBL/\r\nihlV7nIosONuitjxM93ATjKE+3ZY3hyC\r\n-----END CERTIFICATE-----\r\n"
-        }
+```json
+{
+  "integration": {
+    "imsEndpoint": "ims-na1.adobelogin.com",
+    "scopes": [
+      "read_pc.dma_aem_ams",
+      "openid",
+      "AdobeID",
+      "read_organizations",
+      "additional_info.projectedProductContext"
+    ],
+    "technicalAccount": {
+      "clientId": "your-client-id",
+      "clientSecret": "your-client-secret"
+    },
+    "email": "your-technical-account@techacct.adobe.com",
+    "id": "your-technical-account-id@techacct.adobe.com",
+    "org": "your-org-id@AdobeOrg"
+  }
 }
 ```
 
+These are placeholders. Copy the values and scopes from your own credentials rather than using this example unchanged. Keep the supplied `imsEndpoint`, including `ims-na1-stg1.adobelogin.com` for stage credentials. The helper uses only `integration.imsEndpoint`, `integration.technicalAccount.clientId`, `integration.technicalAccount.clientSecret`, and `integration.scopes`; other fields are accepted but are not sent to IMS.
 
-### Contributing
+Keep the file private and do not commit it. `downloaded_integration.json` is ignored by Git in this repository. In a deployed application, load credentials from a secret manager or another access-controlled store instead of storing them in source code.
 
-Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.
+## Request an access token
 
-### Licensing
+Pass the parsed JSON object directly to `requestAccessToken(credentials)`, just as the legacy example passes its object to `exchange(config)`. The object can come from a local JSON file or any other source that provides the wrapped credentials; the helper does not require a filename. See [Call an AEM API](#call-an-aem-api) for programmatic usage.
+
+From a checkout of this repository:
+
+```sh
+node oauth-s2s-cli.js downloaded_integration.json
+```
+
+The CLI reads the file and prints the IMS token response:
+
+```json
+{
+  "access_token": "REDACTED",
+  "token_type": "bearer",
+  "expires_in": 86399
+}
+```
+
+**The CLI output contains a sensitive access token.** Do not send it to shared logs or publish it.
+
+The request in [oauth-s2s.js](oauth-s2s.js) is a form-encoded POST to `https://<imsEndpoint>/ims/token/v3` with:
+
+| Parameter | Value |
+| --- | --- |
+| `grant_type` | `client_credentials` |
+| `client_id` | `integration.technicalAccount.clientId` |
+| `client_secret` | `integration.technicalAccount.clientSecret` |
+| `scope` | The comma-separated values of `integration.scopes` |
+
+The example rejects redirects and limits each token request to 30 seconds. Failed IMS requests produce an HTTP-status error without printing the response body or credentials.
+
+## Call an AEM API
+
+Import the OAuth example explicitly as `require('./oauth-s2s')`. The existing `index.js` export and `cli.js exchange` command remain the legacy JWT examples.
+
+```javascript
+const fs = require('node:fs');
+const requestAccessToken = require('./oauth-s2s');
+
+async function main() {
+    const credentials = JSON.parse(
+        fs.readFileSync('downloaded_integration.json', 'utf8')
+    );
+    const { access_token } = await requestAccessToken(credentials);
+
+    // Replace this URL with your environment and an API the account can access.
+    const response = await fetch(
+        'https://author-p123-e456.adobeaemcloud.com/content/dam.json',
+        { headers: { Authorization: `Bearer ${access_token}` } }
+    );
+    if (!response.ok) {
+        throw new Error(`AEM API request failed: HTTP ${response.status}`);
+    }
+    console.log(await response.json());
+}
+
+main().catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
+});
+```
+
+For a long-running application, cache and reuse access tokens until shortly before they expire. IMS reports `expires_in` in seconds. OAuth Server-to-Server does not issue a refresh token; request another access token with the same client credentials when needed. This minimal example does not implement a token cache or automatic retries.
+
+## Rotate a client secret
+
+Create a replacement secret in the AEM Developer Console and save its credentials from the dialog that shows the new secret; the console shows it only once. Replace `technicalAccount.clientSecret` in the credentials every application using the account loads with the new value, then request a fresh token and verify AEM access with the replacement secret before revoking the old secret. Revoking a secret in the AEM Developer Console requires that secret's value.
+
+The authentication code does not change: it uses the selected `technicalAccount.clientSecret`. Revocation can take time to propagate and does not necessarily invalidate already-issued access tokens. Follow the console's secret-management guidance when verifying revocation.
+
+## Tests
+
+Run the offline OAuth and JWT compatibility tests without real credentials or network calls:
+
+```sh
+npm run test:oauth
+```
+
+The original `npm test` command is preserved. It performs a live JWT exchange using your local `downloaded_integration.json`; its setup is documented in [the legacy README](README-jwt-legacy.md#how-to-test).
+
+## Legacy JWT examples
+
+See [README-jwt-legacy.md](README-jwt-legacy.md) for the original instructions and examples. `index.js`, `cli.js`, and `index.spec.js` are unchanged.
+
+## Contributing
+
+Contributions are welcomed! Read the [Contributing Guide](.github/CONTRIBUTING.md) for more information.
+
+## Licensing
 
 This project is licensed under the Apache V2 License. See [LICENSE](LICENSE) for more information.
