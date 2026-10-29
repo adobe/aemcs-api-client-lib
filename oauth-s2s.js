@@ -12,6 +12,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// OAuth Server-to-Server example code, not a client library for publication to npm.
 module.exports = async (integrationConfig) => {
     const integration = integrationConfig?.integration;
     const fields = {

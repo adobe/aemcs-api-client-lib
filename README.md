@@ -1,6 +1,8 @@
-# AEM-CS API Client Library
+# AEM-CS API Authentication Examples
 
 This repository contains minimal Node.js examples for authenticating server-side applications with Adobe Identity Management Services (IMS) and calling AEM as a Cloud Service APIs.
+
+**This is example code, not a supported client library, and is not intended for publication to npm.** Copy and adapt the examples as a starting point for your own application.
 
 **OAuth Server-to-Server is the recommended authentication method.** It uses the OAuth `client_credentials` grant, without a JWT, private key, or certificate. The original JWT README and examples are preserved in [README-jwt-legacy.md](README-jwt-legacy.md). JWT authentication is deprecated in favor of OAuth Server-to-Server.
 
